@@ -1,0 +1,62 @@
+# github://athom-tech/athom-configs/athom-sw01.yaml
+substitutions:
+  project_name: "athom.sw01"
+  button_pin: GPIO3
+  button_mode: INPUT
+  output_pin: GPIO13
+
+packages:
+  common: !include common.yaml
+
+output:
+  - platform: esp8266_pwm
+    id: output_led_blue
+    pin: GPIO14
+    inverted: true
+    max_power: 0.1
+
+  - platform: gpio
+    id: output_led_red
+    pin: GPIO0
+    inverted: true
+
+light:
+  - platform: monochromatic
+    id: led_blue
+    name: "${name} LED Blue"
+    internal: true
+    output: output_led_blue
+    default_transition_length: 200ms
+
+  - platform: binary
+    id: led_red
+    name: "${name} LED Red"
+    internal: true
+    output: output_led_red
+
+script:
+  - id: after_double_click
+    then:
+      - light.turn_on: led_red
+      - delay: 0.2s
+      - light.turn_off: led_red
+      - delay: 0.2s
+      - light.turn_on: led_red
+      - delay: 0.2s
+      - light.turn_off: led_red
+      - delay: 1.4s
+
+  - id: after_long_press
+    then:
+      - light.turn_on: led_red
+      - delay: 0.5s
+      - light.turn_off: led_red
+      - delay: 1.5s
+
+  - id: after_on
+    then:
+      - light.turn_off: led_blue
+
+  - id: after_off
+    then:
+      - light.turn_on: led_blue

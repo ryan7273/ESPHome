@@ -1,0 +1,51 @@
+# github://athom-tech/athom-configs/athom-mini-switch.yaml
+substitutions:
+  project_name: "athom.mini-switch"
+  button_pin: GPIO14
+  button_mode: INPUT_PULLUP
+  output_pin: GPIO13
+
+packages:
+  common: !include common.yaml
+
+light:
+  - platform: status_led
+    name: "${name} LED Blue"
+    internal: true
+    pin:
+      number: GPIO4
+      inverted: true
+
+binary_sensor:
+  - platform: gpio
+    name: "${name} Test Button"
+    internal: true
+    pin:
+      number: GPIO3
+      mode: INPUT_PULLUP
+      inverted: true
+    on_multi_click:
+      - timing:
+          - ON for at most 1s
+          - OFF for at least 0.2s
+        then:
+          - switch.toggle: relay
+      - timing:
+          - ON for at least 4s
+        then:
+          - button.press: reset
+
+script:
+  - id: after_double_click
+    then:
+      - delay: 2s
+
+  - id: after_long_press
+    then:
+      - delay: 2s
+
+  - id: after_on
+    then:
+
+  - id: after_off
+    then:

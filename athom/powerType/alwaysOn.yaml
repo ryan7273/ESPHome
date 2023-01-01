@@ -1,0 +1,23 @@
+substitutions:
+  restore_mode: ALWAYS_ON
+
+esphome:
+  on_boot:
+    then:
+      - switch.turn_off: relay
+
+switch:
+  - platform: output
+    name: "${name} Relay"
+    internal: true
+    output: output_relay
+    restore_mode: ${restore_mode}
+
+  - platform: template
+    id: relay
+    name: "${name}"
+    optimistic: true
+    on_turn_on:
+      - script.execute: after_on
+    on_turn_off:
+      - script.execute: after_off

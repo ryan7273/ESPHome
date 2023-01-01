@@ -1,0 +1,88 @@
+substitutions:
+  name: "New athom device"
+  project_version: "1.1"
+
+packages:
+  common: !include ../common.yaml
+
+esphome:
+  name: "${name}"
+  name_add_mac_suffix: false
+  project:
+    name: "${project_name}"
+    version: "${project_version}"
+  on_boot:
+    then:
+      - switch.turn_off: dbl_click
+      - switch.turn_off: long_press
+
+esp8266:
+  board: esp8285
+  restore_from_flash: false
+
+api:
+
+output:
+  - platform: gpio
+    id: output_relay
+    pin: ${output_pin}
+
+button:
+  - platform: factory_reset
+    id: reset
+    name: "${name} Factory Reset"
+    disabled_by_default: true
+
+switch:
+  - platform: template
+    id: dbl_click
+    name: "${name} Double Click"
+    optimistic: true
+    on_turn_on:
+      - script.execute: after_double_click
+      - script.wait: after_double_click
+      - switch.turn_off: dbl_click
+
+  - platform: template
+    id: long_press
+    name: "${name} Long Press"
+    optimistic: true
+    on_turn_on:
+      - script.execute: after_long_press
+      - script.wait: after_long_press
+      - switch.turn_off: long_press
+
+binary_sensor:
+  - platform: gpio
+    id: input_button
+    name: "${name} Button"
+    internal: true
+    pin:
+      number: ${button_pin}
+      inverted: true
+      mode: ${button_mode}
+    on_multi_click:
+      - timing:
+          - ON for at most 1s
+          - OFF for at least 200ms
+        then:
+          - switch.toggle: relay
+      - timing:
+          - ON for at most 1s
+          - OFF for at most 350ms
+          - ON for at most 1s
+          - OFF for at least 200ms
+        then:
+          - switch.turn_on: dbl_click
+      - timing:
+          - ON for 1.1s to 4s
+          - OFF for at least 200ms
+        then:
+          - switch.turn_on: long_press
+      - timing:
+          - ON for at least 5s
+          - OFF for at most 0.5s
+          - ON for at least 5s
+          - OFF for at most 0.5s
+        then:
+          - button.press: reset

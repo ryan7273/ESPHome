@@ -1,0 +1,92 @@
+# https://github.com/athom-tech/athom-configs/blob/main/athom-smart-plug.yaml
+substitutions:
+  project_name: "athom.smart-plug"
+  button_pin: GPIO3
+  button_mode: INPUT_PULLUP
+  output_pin: GPIO14
+
+packages:
+  common: !include common.yaml
+
+light:
+  - platform: status_led
+    name: "${name} LED"
+    id: led_status
+    disabled_by_default: true
+    pin:
+      inverted: true
+      number: GPIO13
+
+sensor:
+  - platform: uptime
+    name: "${name} Uptime"
+    disabled_by_default: true
+
+  - platform: hlw8012
+    sel_pin:
+      number: GPIO12
+      inverted: True
+    cf_pin: GPIO4
+    cf1_pin: GPIO5
+    voltage_divider: 780
+    current:
+      name: "${name} Current"
+      filters:
+        - calibrate_linear:
+            - 0.0000 -> 0.0110 # Relay off no load
+            - 0.0097 -> 0.0260 # Relay on no load
+            - 0.9270 -> 0.7570
+            - 2.0133 -> 1.6330
+            - 2.9307 -> 2.3750
+            - 5.4848 -> 4.4210
+            - 8.4308 -> 6.8330
+            - 9.9171 -> 7.9830
+        # Normalize for plug load
+        - lambda: if (x < 0.0260) return 0; else return (x - 0.0260);
+    voltage:
+      name: "${name} Voltage"
+
+    power:
+      name: "${name} Power"
+      id: socket_my_power
+      unit_of_measurement: W
+      filters:
+        - calibrate_linear:
+            - 0.0000 -> 0.5900 # Relay off no load
+            - 0.0000 -> 1.5600 # Relay on no load
+            - 198.5129 -> 87.8300
+            - 434.2469 -> 189.5000
+            - 628.6241 -> 273.9000
+            - 1067.0067 -> 460.1000
+            - 1619.8098 -> 699.2000
+            - 2043.0282 -> 885.0000
+        # Normalize for plug load
+        - lambda: if (x < 1.5600) return 0; else return (x - 1.5600);
+    change_mode_every: 1
+    update_interval: 5s
+
+  - platform: total_daily_energy
+    name: "${name} Total Energy"
+    power_id: socket_my_power
+    unit_of_measurement: kWh
+    accuracy_decimals: 3
+    restore: true
+    filters:
+      - multiply: 0.001
+
+script:
+  - id: after_double_click
+    then:
+      - delay: 2s
+
+  - id: after_long_press
+    then:
+      - delay: 2s
+
+  - id: after_on
+    then:
+      - light.turn_on: led_status
+
+  - id: after_off
+    then:
+      - light.turn_off: led_status
