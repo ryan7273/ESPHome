@@ -86,3 +86,16 @@ binary_sensor:
           - OFF for at most 0.5s
         then:
           - button.press: reset
+      - timing:
+          - ON for at most 1s
+          - OFF for at most 350ms
+          - ON for at most 1s
+          - OFF for at most 350ms
+          - ON for at most 1s
+          - OFF for at most 350ms
+          - ON for at most 1s
+          - OFF for at most 350ms
+          - ON for at most 1s
+          - OFF for at least 200ms
+        then:
+          - switch.toggle: ${relay_id}

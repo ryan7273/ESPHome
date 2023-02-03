@@ -1,5 +1,6 @@
 substitutions:
   restore_mode: ALWAYS_ON
+  relay_id: real_relay
 
 esphome:
   on_boot:
@@ -8,6 +9,7 @@ esphome:
 
 switch:
   - platform: output
+    id: real_relay
     name: "${name} Relay"
     internal: true
     output: output_relay
