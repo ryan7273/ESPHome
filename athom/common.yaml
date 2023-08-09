@@ -33,6 +33,11 @@ button:
     name: "${name} Factory Reset"
     disabled_by_default: true
 
+  - platform: restart
+    id: reboot
+    name: "${name} Reboot"
+    disabled_by_default: true
+
 switch:
   - platform: template
     id: dbl_click
@@ -80,13 +85,6 @@ binary_sensor:
         then:
           - switch.turn_on: long_press
       - timing:
-          - ON for at least 5s
-          - OFF for at most 0.5s
-          - ON for at least 5s
-          - OFF for at most 0.5s
-        then:
-          - button.press: reset
-      - timing:
           - ON for at most 1s
           - OFF for at most 350ms
           - ON for at most 1s
@@ -99,3 +97,21 @@ binary_sensor:
           - OFF for at least 200ms
         then:
           - switch.toggle: ${relay_id}
+      - timing:
+          - ON for at least 2s
+          - OFF for at least 1s
+          - ON for at least 2s
+          - OFF for at most 0.9s
+        then:
+          - button.press: reboot
+      - timing:
+          - ON for at least 2s
+          - OFF for at least 1s
+          - ON for at least 2s
+          - OFF for at least 1s
+          - ON for at least 2s
+          - OFF for at least 1s
+          - ON for at least 2s
+          - OFF for at least 1s
+        then:
+          - button.press: reset
