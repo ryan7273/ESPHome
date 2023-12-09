@@ -1,23 +1,8 @@
 substitutions:
-  name: "athom-garage-door"
   project_name: "athom.garage-door"
-  project_version: "1.1"
 
 packages:
-  common: !include ../common.yaml
-
-esphome:
-  name: "${name}"
-  name_add_mac_suffix: false
-  project:
-    name: "${project_name}"
-    version: "${project_version}"
-
-esp8266:
-  board: esp8285
-  restore_from_flash: false
-
-api:
+  common: !include common.yaml
 
 sensor:
   - platform: uptime
@@ -26,6 +11,7 @@ sensor:
 
   - platform: wifi_signal
     name: "${name} WiFi Signal"
+    disabled_by_default: true
     update_interval: 60s
 
 binary_sensor:
@@ -59,11 +45,11 @@ binary_sensor:
       - timing:
           - ON for at least 4s
         then:
-          - button.press: Reset
+          - button.press: reset
 
 button:
   - platform: factory_reset
-    id: Reset
+    id: reset
     name: "${name} Factory Reset"
     disabled_by_default: true
 

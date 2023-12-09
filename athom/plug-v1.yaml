@@ -7,6 +7,7 @@ substitutions:
 
 packages:
   common: !include common.yaml
+  power: !include power/power.yaml
 
 light:
   - platform: status_led
