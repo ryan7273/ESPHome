@@ -50,12 +50,12 @@ binary_sensor:
       mode: ${button_mode}
     on_multi_click:
       - timing:
-          - ON for at most 1s
+          - ON for 50ms to 1s
           - OFF for at least 200ms
         then:
           - switch.toggle: relay
       - timing:
-          - ON for at most 1s
+          - ON for 50ms to 1s
           - OFF for at most 350ms
           - ON for at most 1s
           - OFF for at least 200ms
@@ -67,7 +67,7 @@ binary_sensor:
         then:
           - switch.turn_on: long_press
       - timing:
-          - ON for at most 1s
+          - ON for 50ms to 1s
           - OFF for at most 350ms
           - ON for at most 1s
           - OFF for at most 350ms
