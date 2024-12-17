@@ -1,13 +1,18 @@
-# https://github.com/athom-tech/athom-configs/blob/main/athom-smart-plug.yaml
+# https://github.com/athom-tech/athom-configs/blob/main/athom-smart-plug-v2.yaml
 substitutions:
   project_name: "athom.smart-plug"
-  button_pin: GPIO3
+  button_pin: GPIO5
   button_mode: INPUT_PULLUP
-  output_pin: GPIO14
+  output_pin: GPIO12
 
 packages:
   common: !include common.yaml
   power: !include power/power.yaml
+
+uart:
+  rx_pin: RX
+  baud_rate: 4800
+  parity: EVEN
 
 light:
   - platform: status_led
@@ -23,30 +28,15 @@ sensor:
     name: "${name} Uptime"
     disabled_by_default: true
 
-  - platform: hlw8012
-    sel_pin:
-      number: GPIO12
-      inverted: True
-    cf_pin: GPIO4
-    cf1_pin: GPIO5
-    voltage_divider: 780
+  - platform: cse7766
     current:
       name: "${name} Current"
       id: current
       unit_of_measurement: A
       accuracy_decimals: 2
       filters:
-        - calibrate_linear:
-            - 0.0000 -> 0.0110 # Relay off no load
-            - 0.0097 -> 0.0260 # Relay on no load
-            - 0.9270 -> 0.7570
-            - 2.0133 -> 1.6330
-            - 2.9307 -> 2.3750
-            - 5.4848 -> 4.4210
-            - 8.4308 -> 6.8330
-            - 9.9171 -> 7.9830
-        # Normalize for plug load
-        - lambda: if (x < 0.0260) return 0; else return (x - 0.0260);
+        - throttle_average: 10s
+        - lambda: if (x < 0.060) return 0.0; else return x; #For the chip will report less than 3w power when no load is connected
       on_value_range:
         - above: 16
           then:
@@ -57,7 +47,7 @@ sensor:
       unit_of_measurement: V
       accuracy_decimals: 1
       filters:
-        - skip_initial: 2
+        - throttle_average: 10s
 
     power:
       name: "${name} Power"
@@ -65,19 +55,8 @@ sensor:
       unit_of_measurement: W
       accuracy_decimals: 1
       filters:
-        - calibrate_linear:
-            - 0.0000 -> 0.5900 # Relay off no load
-            - 0.0000 -> 1.5600 # Relay on no load
-            - 198.5129 -> 87.8300
-            - 434.2469 -> 189.5000
-            - 628.6241 -> 273.9000
-            - 1067.0067 -> 460.1000
-            - 1619.8098 -> 699.2000
-            - 2043.0282 -> 885.0000
-        # Normalize for plug load
-        - lambda: if (x < 1.5600) return 0; else return (x - 1.5600);
-    change_mode_every: 1
-    update_interval: 5s
+        - throttle_average: 10s
+        - lambda: if (x < 3.0) return 0.0; else return x; #For the chip will report less than 3w power when no load is connected
 
   - platform: total_daily_energy
     name: "${name} Total Energy"
