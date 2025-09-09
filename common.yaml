@@ -17,6 +17,8 @@ wifi:
   password: !secret wifi_password
   reboot_timeout: 0s
   fast_connect: true
+  ap:
+    password: !secret ap_password
 
 time:
   - platform: homeassistant
