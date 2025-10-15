@@ -1,4 +1,4 @@
-# https://github.com/athom-tech/athom-configs/blob/main/athom-smart-plug.yaml
+# https://github.com/athom-tech/athom-configs/blob/5eeaeea141d3330e1a862927592fc3c6b3202a23/athom-smart-plug.yaml
 substitutions:
   project_name: "athom.smart-plug"
   button_pin: GPIO3
@@ -56,6 +56,7 @@ sensor:
       id: voltage
       unit_of_measurement: V
       accuracy_decimals: 1
+      icon: mdi:sine-wave
       filters:
         - skip_initial: 2
 
@@ -64,6 +65,7 @@ sensor:
       id: socket_my_power
       unit_of_measurement: W
       accuracy_decimals: 1
+      icon: mdi:power
       filters:
         - calibrate_linear:
             - 0.0000 -> 0.5900 # Relay off no load
@@ -78,6 +80,24 @@ sensor:
         - lambda: if (x < 1.5600) return 0; else return (x - 1.5600);
     change_mode_every: 1
     update_interval: 5s
+
+    energy:
+      name: "Energy"
+      id: energy
+      icon: mdi:flash
+      unit_of_measurement: kWh
+      accuracy_decimals: 3
+      filters:
+        # Multiplication factor from W to kW is 0.001
+        - multiply: 0.001
+      on_value:
+        then:
+          - lambda: |-
+              static float previous_energy_value = 0.0;
+              float current_energy_value = id(energy).state;
+              id(total_energy) += current_energy_value - previous_energy_value;
+              previous_energy_value = current_energy_value;
+              id(total_energy_sensor).update();
 
   - platform: total_daily_energy
     name: "${name} Total Energy"

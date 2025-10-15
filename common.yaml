@@ -4,6 +4,7 @@ ota:
   platform: esphome
 
 logger:
+  level: WARN
   baud_rate: 0
 
 mdns:
@@ -15,6 +16,7 @@ web_server:
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
+  domain: ".local"
   reboot_timeout: 0s
   fast_connect: true
   ap:

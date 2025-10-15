@@ -1,4 +1,4 @@
-# github://athom-tech/athom-configs/athom-mini-switch.yaml
+# https://github.com/athom-tech/athom-configs/blob/5eeaeea141d3330e1a862927592fc3c6b3202a23/athom-mini-switch.yaml
 substitutions:
   project_name: "athom.mini-switch"
   button_pin: GPIO14

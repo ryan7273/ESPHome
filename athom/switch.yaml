@@ -1,4 +1,4 @@
-# github://athom-tech/athom-configs/athom-sw01.yaml
+# https://github.com/athom-tech/athom-configs/blob/5eeaeea141d3330e1a862927592fc3c6b3202a23/athom-sw01.yaml
 substitutions:
   project_name: "athom.sw01"
   button_pin: GPIO3

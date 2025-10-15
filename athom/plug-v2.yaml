@@ -1,4 +1,4 @@
-# https://github.com/athom-tech/athom-configs/blob/main/athom-smart-plug-v2.yaml
+# https://github.com/athom-tech/athom-configs/blob/5eeaeea141d3330e1a862927592fc3c6b3202a23/athom-smart-plug-v2.yaml
 substitutions:
   project_name: "athom.smart-plug"
   button_pin: GPIO5
@@ -34,6 +34,7 @@ sensor:
       id: current
       unit_of_measurement: A
       accuracy_decimals: 2
+      icon: mdi:current-ac
       filters:
         - throttle_average: 10s
         - lambda: if (x < 0.060) return 0.0; else return x; #For the chip will report less than 3w power when no load is connected
@@ -46,6 +47,7 @@ sensor:
       id: voltage
       unit_of_measurement: V
       accuracy_decimals: 1
+      icon: mdi:sine-wave
       filters:
         - throttle_average: 10s
 
@@ -54,6 +56,7 @@ sensor:
       id: socket_my_power
       unit_of_measurement: W
       accuracy_decimals: 1
+      icon: mdi:power
       filters:
         - throttle_average: 10s
         - lambda: if (x < 3.0) return 0.0; else return x; #For the chip will report less than 3w power when no load is connected
